@@ -1,0 +1,24 @@
+.repos-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  justify-content: center;
+  grid-template-areas: 
+  "image content "
+  "image content "
+  "image content "
+  ;
+}
+
+.image {
+  grid-area: image;
+  height: 200px;
+}
+
+.image img {
+  height: 200px;
+}
+
+.content {
+  grid-area: conteudo;
+}
