@@ -25,21 +25,31 @@
   padding: 20px;
   display: grid;
   grid-template-columns: 0.8fr 1fr 2fr 1fr;
+  grid-template-rows: 1fr 2fr;
+  grid-gap: 10px 10px;
   align-items: center;
   justify-content: center;
   grid-template-areas: 
-  "image content"
-  "image content";
+  "image content "
+  "image content "
+  "image content ";
   background-color: #fff;
   margin-top: 1.5em;
   border: 1px dashed transparent;
   box-shadow: -5px 0 15px rgba(0,0,0, .1);
   border-radius: 20px;
-  cursor: pointer;
 }
 
 .repos-container:last-child {
   margin-bottom: 1em;
+}
+
+.info-container a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
 }
 
 .image {
@@ -81,3 +91,10 @@
   color: red;
   font-weight: 700;
 }
+
+.star span {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
