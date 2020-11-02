@@ -1,24 +1,83 @@
+.full-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f5;
+}
+
+.wrap-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  max-width: 1200px;
+  height: 100%;
+}
+
+.title {
+  margin-top: 1em;
+}
+
 .repos-container {
+  width: 1100px;
+  padding: 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto;
+  grid-template-columns: 0.8fr 1fr 2fr 1fr;
+  align-items: center;
   justify-content: center;
   grid-template-areas: 
-  "image content "
-  "image content "
-  "image content "
-  ;
+  "image content"
+  "image content";
+  background-color: #fff;
+  margin-top: 1.5em;
+  border: 1px dashed transparent;
+  box-shadow: -5px 0 15px rgba(0,0,0, .1);
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.repos-container:last-child {
+  margin-bottom: 1em;
 }
 
 .image {
   grid-area: image;
-  height: 200px;
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
 }
 
 .image img {
-  height: 200px;
+  width: 150px;
+  height: 150px;
+  border-radius: 20px;
+  object-fit: cover;
 }
 
 .content {
   grid-area: conteudo;
+}
+
+.textarea-container {
+  height: 38px;
+}
+
+.textarea-resize {
+  min-width: 300px;
+  max-width: 420px;
+  resize: horizontal;
+  line-height: 20px;
+  font-size: 14px;
+}
+
+.public { 
+  color: rgb(8, 233, 8);
+  font-weight: 700;
+}
+
+.private {
+  color: red;
+  font-weight: 700;
 }

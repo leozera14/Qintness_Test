@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'; 
-import { FiSearch } from 'react-icons/fi';
+import { FiGithub } from 'react-icons/fi';
+import './style.css';
 
 export default function Home() {
   const [user, setUser] = useState();
@@ -24,18 +25,24 @@ export default function Home() {
   }
 
   return (
-    <div>
-      <form onSubmit={getUser}>
-        <input 
-        type="text" 
-        placeholder="Digite o nome do usuário"
-        value={user} 
-        onChange={e => setUser(e.target.value)}/>
+    <div className="container">
+      <div className="content-container">
+        <div className="title">
+          <h1>Busque por um usuário</h1>
+        </div>
+        <form onSubmit={getUser}>
+          <input 
+          type="text" 
+          placeholder="Digite o nome do usuário"
+          required={true}
+          value={user} 
+          onChange={e => setUser(e.target.value)}/>
 
-        <button type="submit">
-          <FiSearch scale="18" color="#000"/>
-        </button>
-      </form>
+          <button type="submit">
+            <FiGithub size={25} color="#fff"/>
+          </button>
+        </form>
+      </div>
 
       <ToastContainer />
     </div>
