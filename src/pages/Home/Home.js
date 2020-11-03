@@ -8,6 +8,14 @@ import './style.css';
 export default function Home() {
   const [user, setUser] = useState();
 
+  const no_user = localStorage.setItem('no_user');
+
+  if(no_user) {
+    toast.error("Necessário informar um usuário");
+  } else {
+    localStorage.removeItem('no_user');
+  }
+
   const history = useHistory(); 
 
   async function getUser(e) {
