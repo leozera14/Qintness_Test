@@ -1,10 +1,10 @@
 import React from 'react';
 import { useFetch } from '../../hooks/useFetch';
-import axios from 'axios';
+import { Octokit } from "@octokit/core";
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'; 
-import { FiGithub } from 'react-icons/fi';
+import { FiGithub, FiArrowLeft } from 'react-icons/fi';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import './style.css'
 
@@ -21,6 +21,7 @@ export default function Home() {
   let minutes = null;
   let seconds = null;
 
+
   if(!data) {
     return <p>Carregando...</p>
   } 
@@ -32,20 +33,41 @@ export default function Home() {
     })
   }
 
-  async function favoriteRepo(stars, name) {
-    console.log(stars, name);
+  function clear(){
+    localStorage.removeItem('username');
+  };
+
+  async function favoriteRepo(stars, repo, owner, type) {
+    console.log(stars, repo, owner);
+
+    const octokit = new Octokit({ auth: `a5cd113f7303d53699d81589ac7318acf397e6d9` });
+    
 
     if(stars === 0) {
       try {
-        await axios.put(`https://api.github.com/user/starred/${user}/${name}`, {
-          headers: {
-            "Accept": "application/vnd.github.v3+json",
-            "Content-Length": "0"
+        await octokit.request("PUT /user/starred/:owner/:repo", {
+          owner: owner,
+          repo: repo,
+          type: type,
+        }).then(function(response) {
+          if(response.status === 204) {
+            toast.success("Repositório favoritado com sucesso !")
           }
         })
-          .then(function(response) {
-            console.log(response);
-          })
+      } catch (error) {
+        console.log(`${error}`);
+      }
+    } else {
+      try {
+        await octokit.request("DELETE /user/starred/:owner/:repo", {
+          owner: owner,
+          repo: repo,
+          type: type,
+        }).then(function(response) {
+          if(response.status === 204) {
+            toast.success("Repositório desfavoritado com sucesso !")
+          }
+        })
       } catch (error) {
         console.log(`${error}`);
       }
@@ -56,7 +78,13 @@ export default function Home() {
     <div className="full-container">
         <div className="wrap-container">
         <div className="title">
-          <h1>Repositórios de {user}</h1>
+          <div>
+           <h1>Repositórios de {user}</h1>
+          </div>
+
+          <div>
+           <Link to="/" onClick={clear}><FiArrowLeft /> &nbsp;Voltar a Home</Link>
+          </div>
         </div>
           {data.map(dados => ( 
             <div className="repos-container" key={dados.id}>
@@ -138,17 +166,17 @@ export default function Home() {
                 <p>
                   {
                   dados.stargazers_count === 0
-                  ? <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name)} >
-                      <AiOutlineStar size={20} /> &nbsp;Não favorito
+                  ? <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name, dados.owner.login, dados.private)} >
+                      <AiOutlineStar size={23} color="#ffd700"/> &nbsp;Star
                     </span> 
-                  : <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name)}>
-                      <AiFillStar size={20} /> &nbsp;Favorito
+                  : <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name, dados.owner.login, dados.private)}>
+                      <AiFillStar size={23} color="#ffd700"/> &nbsp;Unstar
                     </span>    
                   }
                   </p>
               </div>
 
-              <div className="item conteudo info-container">
+              <div className="item conteudo info-container link-repository">
                 <Link onClick={() => goToRepo(dados.html_url)}><FiGithub color="#000" size={20} /> &nbsp;Visite o repositório...</Link>
               </div>
             </div>

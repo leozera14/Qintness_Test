@@ -7,8 +7,7 @@ export function useFetch(url) {
 
     return response.data;
   }, {
-    refreshInterval: 1500,
-    refreshWhenHidden: true
+    refreshInterval: 2000
   })
 
   return { data, error, mutate }
