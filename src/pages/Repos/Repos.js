@@ -40,7 +40,7 @@ export default function Home() {
   async function favoriteRepo(stars, repo, owner, type) {
     console.log(stars, repo, owner);
 
-    const octokit = new Octokit({ auth: `a5cd113f7303d53699d81589ac7318acf397e6d9` });
+    const octokit = new Octokit({ auth: `9c31636c39422e77ec474d03094ef1a1cf3e35dd` });
     
 
     if(stars === 0) {
