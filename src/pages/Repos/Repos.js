@@ -2,7 +2,7 @@ import React from 'react';
 import dotenv from 'dotenv';
 import { useFetch } from '../../hooks/useFetch';
 import { Octokit } from "@octokit/core";
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'; 
 import { FiGithub, FiArrowLeft } from 'react-icons/fi';
@@ -10,19 +10,9 @@ import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
 import './style.css'
 
 export default function Home() {
-  const history = useHistory();
-
-  const user = localStorage.getItem('username'); 
-
-  if(!user) {
-    localStorage.setItem('no_user');
-
-    history.push('/');
-  }
+  const user = localStorage.getItem('username');
 
   const { data } = useFetch(`https://api.github.com/users/${user}/repos`);
-
-  const token = dotenv.config(process.env.TOKEN);
 
   let date = null;
   let year = null;
@@ -45,13 +35,13 @@ export default function Home() {
   }
 
   function clear(){
-    localStorage.removeItem('username');
+    localStorage.clear();
   };
 
   async function favoriteRepo(stars, repo, owner, type) {
     console.log(stars, repo, owner);
 
-    const octokit = new Octokit({ auth: `${token}` });
+    const octokit = new Octokit({ auth: `` });
     
 
     if(stars === 0) {
