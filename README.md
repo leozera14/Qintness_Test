@@ -31,7 +31,12 @@ ao tentar dar submit no `form` sem este parâmetro, será requerido pelo `input`
 rota diretamente, será retornado automaticamente para a `Home` pois a aplicação verifica se há algum `username` presente no
 `localStorage` do navegador, onde este só é setado após o submit do `form`.  
 
-##### Fontes
+##### Media Query
+
+A aplicação conta com media query para telas de até 1280px com um CSS feito para organização da tela em dispositivos móveis / tablets
+fazendo com que usuários de qualquer plataforma consigam usam a aplicação.
+
+###### Fontes
 
 A aplicação foi desenvolvida seguindo a [Documentação da API do Github](https://docs.github.com/en/free-pro-team@latest/rest),
 com o uso da `lib` [SWR](https://github.com/vercel/swr) e várias outras ferramentas pertencentes do **React**.
