@@ -1,18 +1,31 @@
-import React from 'react';
-import dotenv from 'dotenv';
+import React, { useState, useEffect } from 'react';
 import { useFetch } from '../../hooks/useFetch';
 import { Octokit } from "@octokit/core";
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css'; 
-import { FiGithub, FiArrowLeft } from 'react-icons/fi';
-import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
+import { FiArrowLeft } from 'react-icons/fi';
+import { AiFillStar, AiOutlineStar, AiOutlineMail } from 'react-icons/ai';
+import { BiBuildings } from 'react-icons/bi';
+import { GrLocation } from 'react-icons/gr';
 import './style.css'
 
-export default function Home() {
-  const user = localStorage.getItem('username');
+export default function Repos() {
+  const [repo, setRepo] = useState([]);
+  const [userInfo, setUserInfo] = useState([]);
 
-  const { data } = useFetch(`https://api.github.com/users/${user}/repos`);
+  const userData = Object.assign([userInfo]);
+
+  const user = localStorage.getItem('username');
+  const octokit = new Octokit({ auth: process.env.REACT_APP_TOKEN });
+
+  useEffect(() => {
+      octokit.request('GET /users/{username}', {
+        username: user
+      }).then(function (response) {
+        setUserInfo(response.data)
+      })
+  }, [user])
 
   let date = null;
   let year = null;
@@ -22,167 +35,201 @@ export default function Home() {
   let minutes = null;
   let seconds = null;
 
+  const { data, error } = useFetch(repo ? `https://api.github.com/users/${user}/repos` : null);
+
+  console.log(userData)
 
   if(!data) {
     return <p>Carregando...</p>
   } 
 
-  function goToRepo(url) {
-    setTimeout(() => {
-      toast.success('Redirecionando ao repositorio...');
-      window.open(url)
-    })
+  if(error) {
+    return <p>Erro ao carregar repositórios {error}</p>
   }
 
   function clear(){
     localStorage.clear();
   };
 
-  async function favoriteRepo(stars, repo, owner, type) {
-    console.log(stars, repo, owner);
+  async function favoriteRepo(repo, owner, type) {
+    try {
+      const request = await octokit.request("GET /user/starred/:owner/:repo", {
+        owner: owner,
+        repo: repo,
+        type: type,
+      })
 
-    const octokit = new Octokit({ auth: `` });
-    
-
-    if(stars === 0) {
-      try {
-        await octokit.request("PUT /user/starred/:owner/:repo", {
-          owner: owner,
-          repo: repo,
-          type: type,
-        }).then(function(response) {
-          if(response.status === 204) {
-            toast.success("Repositório favoritado com sucesso !")
-          }
-        })
-      } catch (error) {
-        console.log(`${error}`);
-      }
-    } else {
-      try {
-        await octokit.request("DELETE /user/starred/:owner/:repo", {
-          owner: owner,
-          repo: repo,
-          type: type,
-        }).then(function(response) {
-          if(response.status === 204) {
-            toast.success("Repositório desfavoritado com sucesso !")
-          }
-        })
-      } catch (error) {
-        console.log(`${error}`);
+      if (request.status === 204) {
+        try {
+          await octokit.request("DELETE /user/starred/:owner/:repo", {
+            owner: owner,
+            repo: repo,
+            type: type,
+          }).then(function(response) {
+            if(response.status === 204) {
+              toast.success("Repositório desfavoritado com sucesso !")
+            }
+          })
+        } catch (error) {
+          console.log(`${error}`);
+        }
+      } 
+    } catch (error) {
+        if (error.status === 404) {
+          try {
+            await octokit.request("PUT /user/starred/:owner/:repo", {
+              owner: owner,
+              repo: repo,
+              type: type,
+            }).then(function(response) {
+              if(response.status === 204) {
+                toast.success("Repositório favoritado com sucesso !")
+              }
+            })
+          } catch (error) {
+            console.log(`${error}`);
+        }
       }
     }
   }
 
   return (
     <div className="full-container">
-        <div className="wrap-container">
-        <div className="title">
-          <div>
-           <h1>Repositórios de {user}</h1>
+      <div className="wrap-container">
+        <div className="wrap-content">
+
+          <div className="title">
+            <Link to="/" onClick={clear}><FiArrowLeft /> &nbsp;Voltar para a Home</Link>
           </div>
+          
+          <div className="content-one">
+            {userData.length > 0
+              ? userData.map(user => (
+                <>
+                  <div className="user-container">
+                    <div className="profile-info user-image">
+                      <a href={user.html_url} target="_blank" rel="noreferrer">
+                        <img src={user.avatar_url} alt={user.login}/>
+                      </a>
+                    </div>
 
-          <div>
-           <Link to="/" onClick={clear}><FiArrowLeft /> &nbsp;Voltar a Home</Link>
+                    <div className="profile-info user-name">
+                      <h1> {user.name} </h1>
+                    </div>
+
+                    <div className="profile-info user-login">
+                      <p>{user.login}</p>
+                    </div>
+
+                    <div className="profile-info user-bio">
+                      <p>{user.bio}</p>
+                    </div>
+
+                    <div className="profile-info">
+                      <p><BiBuildings /> &nbsp;{user.company}</p>
+                    </div>
+
+                    <div className="profile-info">
+                      <p><GrLocation /> &nbsp;{user.location}</p>
+                    </div>
+
+                    <div className="profile-info">
+                      <p><AiOutlineMail /> &nbsp;{user.email}</p>
+                    </div>
+                  </div>
+                </>
+              ))
+              :<div></div>
+            }
           </div>
-        </div>
-          {data.map(dados => ( 
-            <div className="repos-container" key={dados.id}>
-              <div className="item image info-container">
-                <img src={dados.owner.avatar_url} alt={dados.id}/>
-              </div>
+          
+          <div className="content-two">
+            {data.length > 0
+              ? data.map(dados => ( 
+                <div className="repos-container" key={dados.id}>
+                  <div className="info-container star">
+                    <p>
+                    {
+                      dados.stargazers_count === 0
+                      ? <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)} >
+                          <AiOutlineStar size={23} color="#ffd700"/> &nbsp;Star
+                        </span> 
+                      : <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)}>
+                          <AiFillStar size={23} color="#ffd700"/> &nbsp;Unstar
+                        </span>    
+                      }
+                    </p>
+                  </div>
 
-              
-              <div className="item conteudo info-container">
-                <b>Nome: </b> <p>{dados.name}</p>
-              </div>
+                  <div className="item conteudo info-container info-container-anchor">
+                    <a href={dados.name} target="_blank" rel="noreferrer">
+                      {dados.name}
+                    </a>
+                  </div>
 
-              <div className="item conteudo info-container textarea-container">
-                <b>Descrição: </b>
-                <p>
-                  {dados.description === null
-                  ? <span className="no-description"> Repositório não contém descrição</span>
-                  : <textarea className="textarea-resize" readOnly={true} defaultValue={dados.description  }></textarea>
-                  }
-                </p>
-              </div>
+                  <div className="item conteudo info-container">
+                    <b>Status: </b>
+                    <p>
+                      {dados.private === false
+                      ? <span className="public"> Público</span>
+                      : <span className="private"> Privado</span>
+                      }
+                    </p>
+                  </div>
 
-              <div className="item conteudo info-container">
-                <b>Status: </b>
-                <p>
-                  {dados.private === false
-                  ? <span className="public"> Público</span>
-                  : <span className="private"> Privado</span>
-                  }
-                </p>
-              </div>
+                  <div className="item conteudo info-container">
+                    <b>Principal linguagem: </b> 
+                    <p>{dados.language}</p>
+                  </div>
 
-              <div className="item conteudo info-container">
-                <b>Principal linguagem: </b> 
-                <p>{dados.language}</p>
-              </div>
+                  <div className="item conteudo info-container">
+                    <b>Data de criação: </b>
+                    <p> 
+                      {
+                      date = new Date(dados.created_at),
+                      year = date.getFullYear(),
+                      month = date.getMonth()+1,
+                      dt = date.getDate(),
+                      hours = date.getHours(),
+                      minutes = date.getMinutes(),
+                      seconds = date.getSeconds(),
 
-              <div className="item conteudo info-container">
-                <b>Data de criação: </b>
-                <p> 
-                  {
-                  date = new Date(dados.created_at),
-                  year = date.getFullYear(),
-                  month = date.getMonth()+1,
-                  dt = date.getDate(),
-                  hours = date.getHours(),
-                  minutes = date.getMinutes(),
-                  seconds = date.getSeconds(),
+                      dt < 10 ? dt = '0' + dt : null,
+                      month < 10 ? month = '0' + month : null,
+                      
+                      <span> {dt}/{month}/{year} {hours}:{minutes}:{seconds}</span>
+                      }
+                    </p>
+                  </div>
 
-                  dt < 10 ? dt = '0' + dt : null,
-                  month < 10 ? month = '0' + month : null,
-                  
-                  <span> {dt}/{month}/{year} {hours}:{minutes}:{seconds}</span>
-                  }
-                </p>
-              </div>
-
-              <div className="item conteudo info-container">
-                <b>Último update: </b>
-                <p>
-                  {
-                    date = new Date(dados.updated_at),
-                    year = date.getFullYear(),
-                    month = date.getMonth()+1,
-                    dt = date.getDate(),
-                    hours = date.getHours(),
-                    minutes = date.getMinutes(),
-                    seconds = date.getSeconds(),
-  
-                    dt < 10 ? dt = '0' + dt : null,
-                    month < 10 ? month = '0' + month : null,
-                  
-                    <span> {dt}/{month}/{year} {hours}:{minutes}:{seconds}</span>
-                  }
-                </p>
-              </div>
-
-              <div className="info-container star">
-                <p>
-                  {
-                  dados.stargazers_count === 0
-                  ? <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name, dados.owner.login, dados.private)} >
-                      <AiOutlineStar size={23} color="#ffd700"/> &nbsp;Star
-                    </span> 
-                  : <span onClick={() => favoriteRepo(dados.stargazers_count, dados.name, dados.owner.login, dados.private)}>
-                      <AiFillStar size={23} color="#ffd700"/> &nbsp;Unstar
-                    </span>    
-                  }
-                  </p>
-              </div>
-
-              <div className="item conteudo info-container link-repository">
-                <Link onClick={() => goToRepo(dados.html_url)}><FiGithub color="#000" size={20} /> &nbsp;Visite o repositório...</Link>
-              </div>
-            </div>
-          ))}
-        </div>
+                  <div className="item conteudo info-container">
+                    <b>Último update: </b>
+                    <p>
+                      {
+                        date = new Date(dados.updated_at),
+                        year = date.getFullYear(),
+                        month = date.getMonth()+1,
+                        dt = date.getDate(),
+                        hours = date.getHours(),
+                        minutes = date.getMinutes(),
+                        seconds = date.getSeconds(),
+      
+                        dt < 10 ? dt = '0' + dt : null,
+                        month < 10 ? month = '0' + month : null,
+                      
+                        <span> {dt}/{month}/{year} {hours}:{minutes}:{seconds}</span>
+                      }
+                    </p>
+                  </div>
+                </div>
+              ))
+              : <div></div>
+            }
+         </div>
+        
+        </div>   
+               
+      </div>
       <ToastContainer />
     </div>
   )
