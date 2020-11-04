@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <div className="container">
       <div className="content-container">
-        <div className="title">
+        <div className="title-home">
           <h1>Busque por um usuário</h1>
         </div>
         <form onSubmit={getUser}>

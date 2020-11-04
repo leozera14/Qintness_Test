@@ -1,3 +1,19 @@
+/* MEDIA QUERIES */
+
+@media only screen and (max-width: 600px) {
+  .full-container {
+    background-color: black;
+  }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 768px){
+  .full-container {
+    background-color: blue;
+  }
+}
+
+/* FIM MEDIA QUERIES*/
+
 .full-container {
   display: flex;
   align-items: center;
@@ -5,7 +21,7 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background-color: #f0f0f5;
+  background-color: rgba(224, 224, 224, 1);
 }
 
 .wrap-container {
@@ -19,7 +35,7 @@
 
 .title {
   position: absolute;
-  top: 82%;
+  top: 80%;
 }
 
 .title a {
@@ -28,15 +44,18 @@
   text-decoration: none;
   color: #8257e6;
   font-size: 20px;
+  transition: all 300ms ease-in-out;
 }
 
 .title a:hover > svg {
-  color: #000;
+  font-size: 21px;
+  font-weight: 500;
   transition: all 300ms ease-in-out;
 }
 
 .title a:hover {
-  color: #000;
+  font-size: 21px;
+  font-weight: 500;
   text-decoration: underline;
   transition: all 300ms ease-in-out;
 }

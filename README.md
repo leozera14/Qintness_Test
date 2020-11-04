@@ -1,70 +1,37 @@
-# Getting Started with Create React App
+# Apresentação da Aplicação
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicação feita para o teste solicitada pela Qintness, onde o usuário pesquisa um usuário do Github na tela inicial
+e na tela seguinte são apresentados seus respectivos repositórios. A aplicação ainda contém a função de **Star / Unstar**
+que é presente no próprio Github.
 
-## Available Scripts
+## Instalação
 
-In the project directory, you can run:
+Após clonar o projeto em sua máquina basta rodar o comando `npm install` para baixar os `node_modules`. 
 
-### `npm start`
+### Uso
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Após o passo anterior, basta rodar o comando `npm start` para rodar e abrir a aplicação, onde a mesma tem como padrão 
+o endereço [http://localhost:3000](http://localhost:3000).
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+A aplicação roda baseada na autenticação de um **Personal Token** que é fornecido pelo próprio Github. Para esta configuração
+basta criar um arquivo `.env` dentro da pasta `.src` do projeto, fazendo isso só basta setar a seguinte variavel ambiente:
+**`REACT_APP_TOKEN = "(seu token aqui)"`**.
 
-### `npm test`
+Para saber como pegar seu token de autenticação [acesse este link](https://docs.github.com/pt/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token). OBS: Marque todas opções de permissão para evitar problemas.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Feito isso, basta procurar por qualquer usuário cadastrado no Github que será renderizado seus repositórios. A função de
+`Stars` está configurada por padrão para meu usuário, sendo assim, todos os repositórios que tenho marcados como **Star**
+serão renderizados com o icone da estrela preenchida. Você pode mudar para seu usuário para testar a função, basta apenas 
+mudar o valor do `username` na função `getStarRepo` para o nome de seu usuário ou de qualquer um a sua escolha.  
 
-### `npm run build`
+#### Rotas
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+As rotas da aplicação são definidas de maneira simples, porém, não é possivel acessar a rota `/repos` sem informar um usuário,
+ao tentar dar submit no `form` sem este parâmetro, será requerido pelo `input` a informação do mesmo. Caso tente acessar a
+rota diretamente, será retornado automaticamente para a `Home` pois a aplicação verifica se há algum `username` presente no
+`localStorage` do navegador, onde este só é setado após o submit do `form`.  
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+##### Fontes
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+A aplicação foi desenvolvida seguindo a [Documentação da API do Github](https://docs.github.com/en/free-pro-team@latest/rest),
+com o uso da `lib` [SWR](https://github.com/vercel/swr) e várias outras ferramentas pertencentes do **React**.

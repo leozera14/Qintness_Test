@@ -13,8 +13,7 @@ import './style.css'
 export default function Repos() {
   const [repo, setRepo] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
-
-  const userData = Object.assign([userInfo]);
+  const [star, setStar] = useState([]);
 
   const user = localStorage.getItem('username');
   const octokit = new Octokit({ auth: process.env.REACT_APP_TOKEN });
@@ -23,9 +22,23 @@ export default function Repos() {
       octokit.request('GET /users/{username}', {
         username: user
       }).then(function (response) {
-        setUserInfo(response.data)
-      })
+        setUserInfo([response.data])
+      });
+
+      getStarRepo();
   }, [user])
+
+  async function getStarRepo() {
+   await octokit.request('/users/{username}/starred', {
+      username: 'leozera14'
+    }).then(function (response) {
+      let checked = response.data.map(res => {
+        return res.id;
+      })
+
+      setStar(checked);
+    })
+  }
 
   let date = null;
   let year = null;
@@ -35,9 +48,7 @@ export default function Repos() {
   let minutes = null;
   let seconds = null;
 
-  const { data, error } = useFetch(repo ? `https://api.github.com/users/${user}/repos` : null);
-
-  console.log(userData)
+  const { data, error } = useFetch(repo ? `https://api.github.com/users/${user}/repos` : null); 
 
   if(!data) {
     return <p>Carregando...</p>
@@ -68,6 +79,7 @@ export default function Repos() {
           }).then(function(response) {
             if(response.status === 204) {
               toast.success("Repositório desfavoritado com sucesso !")
+              getStarRepo()
             }
           })
         } catch (error) {
@@ -84,6 +96,7 @@ export default function Repos() {
             }).then(function(response) {
               if(response.status === 204) {
                 toast.success("Repositório favoritado com sucesso !")
+                getStarRepo()
               }
             })
           } catch (error) {
@@ -103,8 +116,8 @@ export default function Repos() {
           </div>
           
           <div className="content-one">
-            {userData.length > 0
-              ? userData.map(user => (
+            {userInfo.length > 0
+              ? userInfo.map(user => (
                 <>
                   <div className="user-container">
                     <div className="profile-info user-image">
@@ -149,14 +162,15 @@ export default function Repos() {
                 <div className="repos-container" key={dados.id}>
                   <div className="info-container star">
                     <p>
-                    {
-                      dados.stargazers_count === 0
-                      ? <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)} >
-                          <AiOutlineStar size={23} color="#ffd700"/> &nbsp;Star
-                        </span> 
-                      : <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)}>
-                          <AiFillStar size={23} color="#ffd700"/> &nbsp;Unstar
-                        </span>    
+                    {   
+                        star.includes(dados.id)
+                        ? <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)}>
+                              <AiFillStar size={23} color="#ffd700"/> &nbsp;Unstar
+                            </span>
+                        : <span onClick={() => favoriteRepo(dados.name, dados.owner.login, dados.private)}>
+                              <AiOutlineStar size={23} color="#ffd700"/> &nbsp;Star
+                           </span>
+
                       }
                     </p>
                   </div>
